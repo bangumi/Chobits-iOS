@@ -180,4 +180,43 @@ final class SubjectV2: Searchable, Linkable {
     if self.nsfw != item.nsfw { self.nsfw = item.nsfw }
     if self.type != item.type.rawValue { self.type = item.type.rawValue }
   }
+
+  func nextEpisodeDays(context: ModelContext) -> Int {
+    guard typeEnum == .anime || typeEnum == .real else {
+      return Int.max
+    }
+    
+    do {
+      // 查找该条目的第一个未看的主要剧集
+      let currentSubjectId = self.subjectId
+      let descriptor = FetchDescriptor<Episode>(
+        predicate: #Predicate<Episode> {
+          $0.subjectId == currentSubjectId && $0.type == 0 && $0.status == 0
+        },
+        sortBy: [SortDescriptor<Episode>(\.sort, order: .forward)]
+      )
+      
+      let episodes = try context.fetch(descriptor)
+      
+      // 没有未看的剧集，返回最低优先级
+      guard let nextEpisode = episodes.first else { return Int.max }
+      // 播出时间未知，返回较低优先级
+      if nextEpisode.air.timeIntervalSince1970 == 0 { return Int.max - 1 }
+      
+      let calendar = Calendar.current
+      let now = Date()
+      let components = calendar.dateComponents([.day], from: now, to: nextEpisode.air)
+      
+      if let days = components.day {
+        if days < 0 {
+          // 已经播出但未看，优先级最高
+          return -days
+        } else {
+          // 还未播出，按天数排序
+          return days
+        }
+      }
+      return Int.max
+    } catch { return Int.max }
+  }
 }
