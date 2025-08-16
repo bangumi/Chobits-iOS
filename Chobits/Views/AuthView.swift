@@ -15,7 +15,7 @@ struct AuthView: View {
         }
       } label: {
         Text("登录")
-      }.buttonStyle(.borderedProminent)
+      }.adaptiveButtonStyle(.borderedProminent)
     }
   }
 

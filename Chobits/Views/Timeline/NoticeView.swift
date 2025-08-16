@@ -55,7 +55,7 @@ struct NoticeView: View {
                 ZStack {
                   Button("全部已读", action: {})
                     .font(.footnote)
-                    .buttonStyle(.borderedProminent)
+                    .adaptiveButtonStyle(.borderedProminent)
                     .disabled(true)
                     .hidden()
                   ProgressView()
@@ -63,7 +63,7 @@ struct NoticeView: View {
               } else {
                 Button("全部已读", action: clearNotice)
                   .font(.footnote)
-                  .buttonStyle(.borderedProminent)
+                  .adaptiveButtonStyle(.borderedProminent)
                   .disabled(unreadCount == 0)
               }
             }.padding(.horizontal, 8)

@@ -59,46 +59,36 @@ extension Chii {
     let collectsMode = FilterMode(collectsModeDefaults)
 
     let db = try self.getDB()
-    await withThrowingTaskGroup(of: Void.self) { group in
-      group.addTask {
-        let response = try await self.getSubjectCharacters(subjectId, limit: 12)
-        try await db.saveSubjectCharacters(subjectId: subjectId, items: response.data)
-      }
-      if offprints {
-        group.addTask {
-          let response = try await self.getSubjectRelations(
-            subjectId, offprint: true, limit: 100)
-          try await db.saveSubjectOffprints(subjectId: subjectId, items: response.data)
-        }
-      }
-      group.addTask {
-        let response = try await self.getSubjectRelations(subjectId, limit: 10)
-        try await db.saveSubjectRelations(subjectId: subjectId, items: response.data)
-      }
-      group.addTask {
-        let response = try await self.getSubjectRecs(subjectId, limit: 10)
-        try await db.saveSubjectRecs(subjectId: subjectId, items: response.data)
-      }
-      if social {
-        group.addTask {
-          let response = try await self.getSubjectCollects(
-            subjectId, mode: collectsMode, limit: 10)
-          try await db.saveSubjectCollects(subjectId: subjectId, items: response.data)
-        }
-        group.addTask {
-          let response = try await self.getSubjectReviews(subjectId, limit: 5)
-          try await db.saveSubjectReviews(subjectId: subjectId, items: response.data)
-        }
-        group.addTask {
-          let response = try await self.getSubjectTopics(subjectId, limit: 5)
-          try await db.saveSubjectTopics(subjectId: subjectId, items: response.data)
-        }
-        group.addTask {
-          let response = try await self.getSubjectComments(subjectId, limit: 10)
-          try await db.saveSubjectComments(subjectId: subjectId, items: response.data)
-        }
-      }
+
+    // 并发获取数据，随后顺序保存到数据库，避免 TaskGroup 触发的隔离检查问题
+    async let charactersResp = self.getSubjectCharacters(subjectId, limit: 12)
+    async let relationsResp = self.getSubjectRelations(subjectId, limit: 10)
+    async let recsResp = self.getSubjectRecs(subjectId, limit: 10)
+
+    if offprints {
+      async let offprintsResp = self.getSubjectRelations(subjectId, offprint: true, limit: 100)
+      let offprintsVal = try await offprintsResp
+      try await db.saveSubjectOffprints(subjectId: subjectId, items: offprintsVal.data)
     }
+
+    if social {
+      async let collectsResp = self.getSubjectCollects(subjectId, mode: collectsMode, limit: 10)
+      async let reviewsResp = self.getSubjectReviews(subjectId, limit: 5)
+      async let topicsResp = self.getSubjectTopics(subjectId, limit: 5)
+      async let commentsResp = self.getSubjectComments(subjectId, limit: 10)
+
+      let (collectsVal, reviewsVal, topicsVal, commentsVal) = try await (collectsResp, reviewsResp, topicsResp, commentsResp)
+      try await db.saveSubjectCollects(subjectId: subjectId, items: collectsVal.data)
+      try await db.saveSubjectReviews(subjectId: subjectId, items: reviewsVal.data)
+      try await db.saveSubjectTopics(subjectId: subjectId, items: topicsVal.data)
+      try await db.saveSubjectComments(subjectId: subjectId, items: commentsVal.data)
+    }
+
+    let (charactersVal, relationsVal, recsVal) = try await (charactersResp, relationsResp, recsResp)
+    try await db.saveSubjectCharacters(subjectId: subjectId, items: charactersVal.data)
+    try await db.saveSubjectRelations(subjectId: subjectId, items: relationsVal.data)
+    try await db.saveSubjectRecs(subjectId: subjectId, items: recsVal.data)
+
     try await db.commit()
   }
 
@@ -175,12 +165,9 @@ extension Chii {
 
   func loadCharacterDetails(_ characterId: Int) async throws {
     let db = try self.getDB()
-    await withThrowingTaskGroup(of: Void.self) { group in
-      group.addTask {
-        let response = try await self.getCharacterCasts(characterId, limit: 5)
-        try await db.saveCharacterCasts(characterId: characterId, items: response.data)
-      }
-    }
+    // 单一请求无需 TaskGroup，直接获取后保存
+    let response = try await self.getCharacterCasts(characterId, limit: 5)
+    try await db.saveCharacterCasts(characterId: characterId, items: response.data)
     try await db.commit()
   }
 
@@ -200,16 +187,13 @@ extension Chii {
 
   func loadPersonDetails(_ personId: Int) async throws {
     let db = try self.getDB()
-    await withThrowingTaskGroup(of: Void.self) { group in
-      group.addTask {
-        let response = try await self.getPersonCasts(personId, limit: 5)
-        try await db.savePersonCasts(personId: personId, items: response.data)
-      }
-      group.addTask {
-        let response = try await self.getPersonWorks(personId, limit: 5)
-        try await db.savePersonWorks(personId: personId, items: response.data)
-      }
-    }
+
+    async let castsResp = self.getPersonCasts(personId, limit: 5)
+    async let worksResp = self.getPersonWorks(personId, limit: 5)
+    let (castsVal, worksVal) = try await (castsResp, worksResp)
+
+    try await db.savePersonCasts(personId: personId, items: castsVal.data)
+    try await db.savePersonWorks(personId: personId, items: worksVal.data)
     try await db.commit()
   }
 }
@@ -224,20 +208,17 @@ extension Chii {
 
   func loadGroupDetails(_ name: String) async throws {
     let db = try self.getDB()
-    await withThrowingTaskGroup(of: Void.self) { group in
-      group.addTask {
-        let response = try await self.getGroupMembers(name, role: .member, limit: 10)
-        try await db.saveGroupRecentMembers(groupName: name, items: response.data)
-      }
-      group.addTask {
-        let response = try await self.getGroupMembers(name, role: .moderator, limit: 10)
-        try await db.saveGroupModerators(groupName: name, items: response.data)
-      }
-      group.addTask {
-        let response = try await self.getGroupTopics(name, limit: 10)
-        try await db.saveGroupRecentTopics(groupName: name, items: response.data)
-      }
-    }
+
+    async let membersResp = self.getGroupMembers(name, role: .member, limit: 10)
+    async let moderatorsResp = self.getGroupMembers(name, role: .moderator, limit: 10)
+    async let topicsResp = self.getGroupTopics(name, limit: 10)
+
+    let (membersVal, moderatorsVal, topicsVal) = try await (membersResp, moderatorsResp, topicsResp)
+
+    try await db.saveGroupRecentMembers(groupName: name, items: membersVal.data)
+    try await db.saveGroupModerators(groupName: name, items: moderatorsVal.data)
+    try await db.saveGroupRecentTopics(groupName: name, items: topicsVal.data)
+
     try await db.commit()
   }
 }

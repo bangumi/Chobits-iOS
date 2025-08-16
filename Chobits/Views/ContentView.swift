@@ -83,7 +83,7 @@ struct ContentView: View {
         }
       } message: {
         if let error = notifier.currentError {
-          Text("\(error)")
+          Text(verbatim: String(describing: error))
         } else {
           Text("Unknown Error")
         }

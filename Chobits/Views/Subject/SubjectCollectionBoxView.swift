@@ -90,12 +90,12 @@ struct SubjectCollectionBoxView: View {
             Spacer()
             Text(buttonText)
             Spacer()
-          }.buttonStyle(.borderedProminent)
+          }.adaptiveButtonStyle(.borderedProminent)
           Toggle(isOn: $priv) {
             Image(systemName: priv ? "lock" : "lock.open")
           }
           .toggleStyle(.button)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
           .frame(width: 40)
           .sensoryFeedback(.selection, trigger: priv)
         }

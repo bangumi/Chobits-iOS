@@ -7,3 +7,5 @@ xcshareddata/
 
 /apollo-ios-cli
 /buildServer.json
+
+.DS_Store

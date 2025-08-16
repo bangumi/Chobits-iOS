@@ -234,13 +234,13 @@ struct LargeChapterView: View {
             Button("更新", action: {})
               .disabled(true)
               .hidden()
-              .buttonStyle(.borderedProminent)
+              .adaptiveButtonStyle(.borderedProminent)
             ProgressView()
           }
         } else {
           Button("更新", action: actions.update)
             .disabled(state.updateButtonDisable)
-            .buttonStyle(.borderedProminent)
+            .adaptiveButtonStyle(.borderedProminent)
         }
       }
     }

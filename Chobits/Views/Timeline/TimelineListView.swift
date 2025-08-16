@@ -108,7 +108,7 @@ struct TimelineListView: View {
               Label("吐槽", systemImage: "square.and.pencil")
                 .font(.footnote)
             }
-            .buttonStyle(.borderedProminent)
+            .adaptiveButtonStyle(.borderedProminent)
             .disabled(showInput)
             .sheet(isPresented: $showInput) {
               TimelineSayView()

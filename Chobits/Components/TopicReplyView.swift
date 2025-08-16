@@ -430,7 +430,7 @@ struct CreateReplyBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             showTurnstile = true
@@ -438,7 +438,7 @@ struct CreateReplyBoxView: View {
             Label("发送", systemImage: "paperplane")
           }
           .disabled(content.isEmpty || updating)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         TextInputView(type: "回复", text: $content)
           .textInputStyle(bbcode: true)
@@ -519,7 +519,7 @@ struct EditReplyBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             Task {
@@ -529,7 +529,7 @@ struct EditReplyBoxView: View {
             Label("保存", systemImage: "checkmark")
           }
           .disabled(content.isEmpty || updating)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         TextInputView(type: "回复", text: $content)
           .textInputStyle(bbcode: true)
@@ -581,7 +581,7 @@ struct CreateTopicBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             showTurnstile = true
@@ -589,7 +589,7 @@ struct CreateTopicBoxView: View {
             Label("发送", systemImage: "paperplane")
           }
           .disabled(title.isEmpty || content.isEmpty || updating)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         VStack {
           BorderView(color: .secondary.opacity(0.2), padding: 4) {
@@ -691,7 +691,7 @@ struct EditTopicBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             Task {
@@ -701,7 +701,7 @@ struct EditTopicBoxView: View {
             Label("保存", systemImage: "checkmark")
           }
           .disabled(submitDisabled)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         VStack {
           BorderView(color: .secondary.opacity(0.2), padding: 4) {

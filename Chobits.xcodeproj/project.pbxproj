@@ -381,7 +381,7 @@
 			repositoryURL = "https://github.com/tevelee/SwiftUI-Flow";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.0;
+				minimumVersion = 3.0.2;
 			};
 		};
 		19B2A7082D087968001617BE /* XCRemoteSwiftPackageReference "bangumi-bbcode-swift" */ = {

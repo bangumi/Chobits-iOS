@@ -111,22 +111,28 @@ struct EpisodeListDetailView: View {
     let sortBy =
       sortDesc ? SortDescriptor<Episode>(\.sort, order: .reverse) : SortDescriptor<Episode>(\.sort)
     let mainType = EpisodeType.main.rawValue
-    let descriptor = FetchDescriptor<Episode>(
-      predicate: #Predicate<Episode> {
-        if main {
-          if filterCollection {
-            $0.subjectId == subjectId && $0.type == mainType && $0.status == 0
-          } else {
-            $0.subjectId == subjectId && $0.type == mainType
-          }
-        } else {
-          if filterCollection {
-            $0.subjectId == subjectId && $0.type != mainType && $0.status == 0
-          } else {
-            $0.subjectId == subjectId && $0.type != mainType
-          }
-        }
-      }, sortBy: [sortBy])
+
+    // 将复杂的条件从 #Predicate 中移出，按分支选择简单谓词，避免类型检查开销
+    let predicate: Predicate<Episode>
+    if main && filterCollection {
+      predicate = #Predicate<Episode> {
+        $0.subjectId == subjectId && $0.type == mainType && $0.status == 0
+      }
+    } else if main {
+      predicate = #Predicate<Episode> {
+        $0.subjectId == subjectId && $0.type == mainType
+      }
+    } else if filterCollection {
+      predicate = #Predicate<Episode> {
+        $0.subjectId == subjectId && $0.type != mainType && $0.status == 0
+      }
+    } else {
+      predicate = #Predicate<Episode> {
+        $0.subjectId == subjectId && $0.type != mainType
+      }
+    }
+
+    let descriptor = FetchDescriptor<Episode>(predicate: predicate, sortBy: [sortBy])
     _episodes = Query(descriptor)
   }
 

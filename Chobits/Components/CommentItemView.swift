@@ -397,7 +397,7 @@ struct CreateCommentBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             showTurnstile = true
@@ -405,7 +405,7 @@ struct CreateCommentBoxView: View {
             Label("发送", systemImage: "paperplane")
           }
           .disabled(content.isEmpty || updating)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         TextInputView(type: "回复", text: $content)
           .textInputStyle(bbcode: true)
@@ -484,7 +484,7 @@ struct EditCommentBoxView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button {
             Task {
@@ -494,7 +494,7 @@ struct EditCommentBoxView: View {
             Label("保存", systemImage: "checkmark")
           }
           .disabled(content.isEmpty || updating)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         TextInputView(type: "回复", text: $content)
           .textInputStyle(bbcode: true)

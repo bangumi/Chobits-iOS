@@ -284,7 +284,7 @@ struct BBCodeEditor: View {
           Label(preview ? "返回编辑" : "预览", systemImage: preview ? "eye.slash" : "eye")
           Spacer()
         }
-      }.buttonStyle(.borderedProminent)
+      }.adaptiveButtonStyle(.borderedProminent)
       if preview {
         BorderView(color: .secondary.opacity(0.2), padding: 4) {
           HStack {
@@ -537,7 +537,7 @@ struct ColorEditor: View {
             show = false
             gradient = false
           }
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Button("确定") {
             if gradient {
@@ -548,7 +548,7 @@ struct ColorEditor: View {
             show = false
             gradient = false
           }
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         HStack {
           ColorPicker("", selection: $start)

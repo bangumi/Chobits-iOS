@@ -31,7 +31,7 @@ struct TimelineSayView: View {
             Label("取消", systemImage: "xmark")
           }
           .disabled(updating)
-          .buttonStyle(.bordered)
+          .adaptiveButtonStyle(.bordered)
           Spacer()
           Text("吐槽")
             .font(.headline)
@@ -42,7 +42,7 @@ struct TimelineSayView: View {
             Label("发送", systemImage: "paperplane")
           }
           .disabled(content.isEmpty || updating || content.count > 380)
-          .buttonStyle(.borderedProminent)
+          .adaptiveButtonStyle(.borderedProminent)
         }
         TextInputView(type: "吐槽", text: $content)
           .textInputStyle(wordLimit: 380)
